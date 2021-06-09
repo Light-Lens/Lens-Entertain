@@ -126,10 +126,10 @@ class Entertain(QMainWindow):
 		if self.Playlist.mediaCount() == 0: self.openFile()
 		elif self.Playlist.mediaCount() != 0: self.Player.playlist().previous()
 
-	def ShuffleSongs(self): self.playlist.shuffle()
+	def ShuffleSongs(self): self.Playlist.shuffle()
 	def NextSong(self):
-		if self.playlist.mediaCount() == 0: self.openFile()
-		elif self.playlist.mediaCount() != 0: self.player.playlist().next()
+		if self.Playlist.mediaCount() == 0: self.openFile()
+		elif self.Playlist.mediaCount() != 0: self.Player.playlist().next()
 
 	def OpenFile(self):
 		Song = QFileDialog.getOpenFileName(self, "Open File", "", "*.mp3;;*.ogg;;*.wav;;*.m4a")
