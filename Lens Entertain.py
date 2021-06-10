@@ -14,13 +14,12 @@ class Entertain(QMainWindow):
 		super(Entertain, self).__init__()
 		self.Player = QMediaPlayer()
 		self.Playlist = QMediaPlaylist()
-		self.Colors = 0 # 0 - Dark, 1 - Light
 		self.UserAction = -1  # 0 - Stopped, 1 - Playing 2 - Paused
+		self.Colors = 0 # 0 - Dark, 1 - Light
 
 		# Setup Window
 		self.setWindowTitle("Lens Entertain")
 		self.setGeometry(250, 250, 350, 150)
-		self.ChangeColors()
 
 		# Setup Menubar
 		Menubar = self.menuBar()
@@ -40,6 +39,7 @@ class Entertain(QMainWindow):
 		Filemenu.addSeparator()
 
 		ExitAct = QAction("Exit", self)
+		ExitAct.setShortcut("Ctrl+Q")
 		Filemenu.addAction(ExitAct)
 		ExitAct.triggered.connect(self.close)
 
@@ -101,13 +101,14 @@ class Entertain(QMainWindow):
 		ShuffleBtn.clicked.connect(self.ShuffleSongs)
 		NextBtn.clicked.connect(self.NextSong)
 
-		self.statusBar().showMessage("Welcome to Lens Entertain!")
+		self.ChangeColors()
+		self.statusBar().showMessage("Lens Entertain!")
 		self.Playlist.currentMediaChanged.connect(self.SongChanged)
 
 	def Documentation(self): webbrowser.open("https://github.com/Light-Lens/Project-Lens")
 	def AboutEntertain(self): QMessageBox.information(self, "About Lens Entertain", "Lens Entertain is an Open-Source Light-Weight Media Player. More features coming soon.")
 	def HandlePlay(self):
-		if self.Playlist.mediaCount() == 0: self.openFile()
+		if self.Playlist.mediaCount() == 0: self.OpenFile()
 		elif self.Playlist.mediaCount() != 0:
 			self.Player.play()
 			self.UserAction = 1
@@ -123,12 +124,12 @@ class Entertain(QMainWindow):
 		self.statusBar().showMessage("Cleared playlist.")
 
 	def PrevSong(self):
-		if self.Playlist.mediaCount() == 0: self.openFile()
+		if self.Playlist.mediaCount() == 0: self.OpenFile()
 		elif self.Playlist.mediaCount() != 0: self.Player.playlist().previous()
 
 	def ShuffleSongs(self): self.Playlist.shuffle()
 	def NextSong(self):
-		if self.Playlist.mediaCount() == 0: self.openFile()
+		if self.Playlist.mediaCount() == 0: self.OpenFile()
 		elif self.Playlist.mediaCount() != 0: self.Player.playlist().next()
 
 	def OpenFile(self):
