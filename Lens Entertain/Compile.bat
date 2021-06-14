@@ -9,9 +9,9 @@ cls
 echo Done.
 move "dist\Lens Entertain.exe" "Lens Entertain.exe"
 
-rmdir dist
-rmdir build
-rmdir __pycache__
+rmdir /s /q dist
+rmdir /s /q build
+rmdir /s /q __pycache__
 
 del "Lens Entertain.spec"
 

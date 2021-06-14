@@ -1,9 +1,10 @@
 {
-	"Entertain-Settings" : [
-		{
-			"Theme" : 0,
-			"Folder" : "",
-			"Volume" : 100
-		}
-	]
+  "Entertain-Settings" : [
+    {
+      "Theme" : 0,
+      "Folder" : "",
+      "Volume" : 100,
+      "AutoSave" : true
+    }
+  ]
 }
