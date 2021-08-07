@@ -18,19 +18,20 @@ import webbrowser # Import webbrowser to open the Documentation of Lens Entertai
 class Entertain(QMainWindow):
 	def __init__(self):
 		super(Entertain, self).__init__()
-		if os.path.isfile(f"{sys.path[0]}/Settings.json"):
-			with open(f"{sys.path[0]}/Settings.json", "r") as File:
+		if os.path.isfile("./Settings.json"):
+			with open("./Settings.json", "r") as File:
 				Content = json.load(File)
 				for Data in Content["Entertain-Settings"]:
 					self.Colors = Data["Theme"] # 0 - Dark, 1 - Light
 					self.Volume = Data["Volume"]  # Change and set same volumn for every track
 					self.Autosave = Data["AutoSave"]
+					self.Autoplay = Data["AutoPlay"]
 					self.PlaylistFolder = Data["Folder"] # Folder containing all songs.
 
 		else:
 			CurrentTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-			QMessageBox.critical(self, "Lens Entertain", f"Sorry, we couldn't find \'{sys.path[0]}/Settings.json\'. Was it moved, renamed, or deleted.\nPlease try reinstalling Lens Entertain.")
-			with open(f"{sys.path[0]}/Crashreport.log", "a") as File: File.write(f"{CurrentTime} - Cannot Locate \'{sys.path[0]}/Settings.json\'.\n")
+			QMessageBox.critical(self, "Lens Entertain", "Sorry, we couldn't find \'Settings.json\'. Was it moved, renamed, or deleted.\nPlease try reinstalling Lens Entertain.")
+			with open("./Crashreport.log", "a") as File: File.write(f"{CurrentTime} - Cannot Locate \'Settings.json\'.\n")
 			sys.exit()
 
 		self.Player = QMediaPlayer()
@@ -38,6 +39,7 @@ class Entertain(QMainWindow):
 		self.UserAction = -1  # 0 - Stopped, 1 - Playing 2 - Paused
 
 		# Setup Window
+		self.setWindowIcon(QIcon("./res/Logo.png"))
 		self.setWindowTitle("Lens Entertain")
 		self.setGeometry(250, 250, 350, 150)
 		self.ChangeColors()
@@ -92,6 +94,11 @@ class Entertain(QMainWindow):
 		Prefermenu.addAction(AutosaveAct)
 		AutosaveAct.setChecked(self.Autosave)
 		AutosaveAct.triggered.connect(self.AutosaveChanges)
+
+		AutoPlayAct = QAction("AutoPlay", self, checkable=True)
+		Prefermenu.addAction(AutoPlayAct)
+		AutoPlayAct.setChecked(self.Autoplay)
+		AutoPlayAct.triggered.connect(self.AutoPlaySongs)
 
 		# Help menu
 		Aboutmenu = Menubar.addMenu("Help")
@@ -170,8 +177,9 @@ class Entertain(QMainWindow):
 			if self.Playlist.mediaCount() == 0:
 				self.Playlist.addMedia(QMediaContent(Url))
 				self.Player.setPlaylist(self.Playlist)
-				self.Player.play()
-				self.UserAction = 1
+				if self.Autoplay == True:
+					self.Player.play()
+					self.UserAction = 1
 
 			else: self.Playlist.addMedia(QMediaContent(Url))
 
@@ -181,12 +189,13 @@ class Entertain(QMainWindow):
 			self.Iterator("LoadFolder")
 			self.Player.setPlaylist(self.Playlist)
 			self.Player.playlist().setCurrentIndex(0)
-			self.Player.play()
-			self.UserAction = 1
+			if self.Autoplay == True:
+				self.Player.play()
+				self.UserAction = 1
 
 	def closeEvent(self, event):
 		if self.Autosave == True:
-			with open(f"{sys.path[0]}/Settings.json", "r") as File:
+			with open("./Settings.json", "r") as File:
 				Content = json.load(File)
 				for Data in Content["Entertain-Settings"]:
 					if self.Colors == 0: Data["Theme"] = 1
@@ -195,7 +204,7 @@ class Entertain(QMainWindow):
 					Data["AutoSave"] = self.Autosave
 					Data["Folder"] = self.PlaylistFolder
 
-			with open(f"{sys.path[0]}/Settings.json", "w") as File:
+			with open("./Settings.json", "w") as File:
 				json.dump(Content, File, indent=2, sort_keys=True)
 
 		event.accept()
@@ -203,56 +212,78 @@ class Entertain(QMainWindow):
 	def AutosaveChanges(self):
 		if self.Autosave == True:
 			self.Autosave = False
-			with open(f"{sys.path[0]}/Settings.json", "r") as File:
+			with open("./Settings.json", "r") as File:
 				Content = json.load(File)
 				for Data in Content["Entertain-Settings"]: Data["AutoSave"] = self.Autosave
 
-			with open(f"{sys.path[0]}/Settings.json", "w") as File:
+			with open("./Settings.json", "w") as File:
 				json.dump(Content, File, indent=2, sort_keys=True)
 
 		elif self.Autosave == False:
 			self.Autosave = True
-			with open(f"{sys.path[0]}/Settings.json", "r") as File:
+			with open("./Settings.json", "r") as File:
 				Content = json.load(File)
 				for Data in Content["Entertain-Settings"]: Data["AutoSave"] = self.Autosave
 
-			with open(f"{sys.path[0]}/Settings.json", "w") as File:
+			with open("./Settings.json", "w") as File:
 				json.dump(Content, File, indent=2, sort_keys=True)
 
-	def OpenSettings(self): os.system(f"start \"{sys.path[0]}/Settings.json\"")
+	def AutoPlaySongs(self):
+		if self.Autoplay == True:
+			self.Autoplay = False
+			with open("./Settings.json", "r") as File:
+				Content = json.load(File)
+				for Data in Content["Entertain-Settings"]: Data["AutoPlay"] = self.Autoplay
+
+			with open("./Settings.json", "w") as File:
+				json.dump(Content, File, indent=2, sort_keys=True)
+
+		elif self.Autoplay == False:
+			self.Autoplay = True
+			with open("./Settings.json", "r") as File:
+				Content = json.load(File)
+				for Data in Content["Entertain-Settings"]: Data["AutoPlay"] = self.Autoplay
+
+			with open("./Settings.json", "w") as File:
+				json.dump(Content, File, indent=2, sort_keys=True)
+
+	def OpenSettings(self): os.system("call \"./Settings.json\"")
 	def SavePrefer(self):
-		with open(f"{sys.path[0]}/Settings.json", "r") as File:
+		with open("./Settings.json", "r") as File:
 			Content = json.load(File)
 			for Data in Content["Entertain-Settings"]:
 				if self.Colors == 0: Data["Theme"] = 1
 				elif self.Colors == 1: Data["Theme"] = 0
 				Data["Volume"] = self.Volume
 				Data["AutoSave"] = self.Autosave
+				Data["AutoPlay"] = self.Autoplay
 				Data["Folder"] = self.PlaylistFolder
 
-		with open(f"{sys.path[0]}/Settings.json", "w") as File:
+		with open("./Settings.json", "w") as File:
 			json.dump(Content, File, indent=2, sort_keys=True)
 
 		self.statusBar().showMessage("Saved settings.")
 
 	def ResetPrefer(self):
-		with open(f"{sys.path[0]}/Settings.json", "r") as File:
+		with open("./Settings.json", "r") as File:
 			Content = json.load(File)
 			for Data in Content["Entertain-Settings"]:
 				Data["Theme"] = 0
 				Data["Folder"] = ""
 				Data["Volume"] = 100
 				Data["AutoSave"] = True
+				Data["AutoPlay"] = True
 
-		with open(f"{sys.path[0]}/Settings.json", "w") as File:
+		with open("./Settings.json", "w") as File:
 			json.dump(Content, File, indent=2, sort_keys=True)
 
-		with open(f"{sys.path[0]}/Settings.json", "r") as File:
+		with open("./Settings.json", "r") as File:
 			Content = json.load(File)
 			for Data in Content["Entertain-Settings"]:
 				self.Colors = Data["Theme"]
 				self.Volume = Data["Volume"]
 				self.Autosave = Data["AutoSave"]
+				self.Autoplay = Data["AutoPlay"]
 				self.PlaylistFolder = Data["Folder"]
 
 		self.ChangeColors()
